@@ -27,7 +27,7 @@ payment_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Наличны�
 # Словарь для хранения временных данных пользователей
 user_data = {}
 
-@dp.message(commands=["start"])
+@dp.message(lambda message: message.text == "/start")
 async def start(message: types.Message):
     await message.answer("Привет! Я бот для запроса ставок. Введи маршрут (например, Shanghai - Odessa)")
 
@@ -64,3 +64,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
