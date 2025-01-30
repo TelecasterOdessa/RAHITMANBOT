@@ -1,7 +1,6 @@
 import logging
 import asyncio
 import random
-import requests
 from aiogram import Bot, Dispatcher, types
 
 # Токен бота (замените на свой)
@@ -14,23 +13,31 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Функция для получения анекдота с моего источника
-async def get_joke():
-    url = "https://official-joke-api.appspot.com/random_joke"  # Публичный API с анекдотами
-    response = requests.get(url)
-    if response.status_code == 200:
-        data = response.json()
-        return f"{data['setup']} \n{data['punchline']}"
-    return "Не удалось получить анекдот, попробуй ещё раз!"
+# Варианты ответов на вопросы
+decisions = [
+    "Да!",
+    "Нет!",
+    "Возможно...",
+    "Попробуй позже.",
+    "Определённо да!",
+    "Я не уверен, переспроси.",
+    "Конечно!",
+    "Сомневаюсь.",
+    "Скорее всего, да.",
+    "Не в этот раз!"
+    "Ебать ты мудак!"
+    "У тебя хуевый вопрос, давай другой гавно ты такое!"
+    "Андрей ЛисОв?! Это ты?!!"
+]
 
 @dp.message(lambda message: message.text == "/start")
 async def start(message: types.Message):
-    await message.answer("Привет! Я бот-анекдотчик. Напиши 'анекдот', и я расскажу тебе что-нибудь смешное!")
+    await message.answer("Привет! Я бот-Решала. Задай мне любой вопрос, и я дам ответ!")
 
-@dp.message(lambda message: message.text.lower() == "анекдот")
-async def send_joke(message: types.Message):
-    joke = await get_joke()
-    await message.answer(f"😂 Вот тебе анекдот: {joke}")
+@dp.message()
+async def give_decision(message: types.Message):
+    answer = random.choice(decisions)
+    await message.answer(f"🔮 {answer}")
 
 # Запуск бота
 async def main():
