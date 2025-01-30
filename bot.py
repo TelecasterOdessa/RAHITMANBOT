@@ -1,20 +1,20 @@
 import logging
 import asyncio
 from openai import OpenAI
-from aiogram import Bot, Dispatcher, types
-from aiogram.filters import Command
+from aiogram import Bot, Dispatcher
 from aiogram.types import Message
+from aiogram.filters import Command
 
-# Указываем токены напрямую
+# Указываем токены
 TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"  # Вставь свой Telegram Bot Token
 OPENAI_API_KEY = "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"  # Вставь свой OpenAI API Key
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
 
-# Создаём бота и диспетчер
+# Создаём бота
 bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()  # В aiogram 3+ Dispatcher создаётся без аргументов
 
 # Создаём OpenAI клиент
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -45,7 +45,10 @@ async def handle_message(message: Message):
 # Запуск бота
 async def main():
     logging.info("Бот запущен!")
-    await dp.start_polling()
+    # Регистрируем бота в диспетчере
+    dp.include_router(dp)  
+    # Запускаем бота
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
