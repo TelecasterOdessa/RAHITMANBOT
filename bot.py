@@ -2,7 +2,6 @@ import logging
 import asyncio
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
-from aiogram.utils import executor
 
 # Токен бота (замените на свой)
 TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"
@@ -12,7 +11,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Создаём бота и диспетчер
 bot = Bot(token=TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 # Клавиатура для выбора типа контейнера
 container_kb = ReplyKeyboardMarkup(resize_keyboard=True)
@@ -25,21 +24,21 @@ payment_kb.add("Наличный расчёт", "Безналичный расч
 # Словарь для хранения временных данных пользователей
 user_data = {}
 
-@dp.message_handler(commands=["start"])
+@dp.message(commands=["start"])
 async def start(message: types.Message):
-    await message.reply("Привет! Я бот для запроса ставок. Введи маршрут (например, Shanghai - Odessa)")
+    await message.answer("Привет! Я бот для запроса ставок. Введи маршрут (например, Shanghai - Odessa)")
 
-@dp.message_handler(lambda message: message.text and " - " in message.text)
+@dp.message(lambda message: " - " in message.text)
 async def get_route(message: types.Message):
     user_data[message.from_user.id] = {"route": message.text}
-    await message.reply("Выбери тип контейнера", reply_markup=container_kb)
+    await message.answer("Выбери тип контейнера", reply_markup=container_kb)
 
-@dp.message_handler(lambda message: message.text in ["20GP", "40GP", "40HQ"])
+@dp.message(lambda message: message.text in ["20GP", "40GP", "40HQ"])
 async def get_container(message: types.Message):
     user_data[message.from_user.id]["container"] = message.text
-    await message.reply("Выбери форму оплаты", reply_markup=payment_kb)
+    await message.answer("Выбери форму оплаты", reply_markup=payment_kb)
 
-@dp.message_handler(lambda message: message.text in ["Наличный расчёт", "Безналичный расчёт"])
+@dp.message(lambda message: message.text in ["Наличный расчёт", "Безналичный расчёт"])
 async def get_payment(message: types.Message):
     user_data[message.from_user.id]["payment"] = message.text
     
@@ -50,12 +49,15 @@ async def get_payment(message: types.Message):
                     f"Тип контейнера: {data['container']}\n"
                     f"Форма оплаты: {data['payment']}")
     
-    await message.reply(request_text + "\nОтправляем агентам...")
+    await message.answer(request_text + "\nОтправляем агентам...")
     
     # Здесь можно добавить логику отправки в Skype или email
     
     del user_data[message.from_user.id]  # Очищаем данные
 
 # Запуск бота
+async def main():
+    await dp.start_polling(bot)
+
 if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)
+    asyncio.run(main())
