@@ -23,7 +23,7 @@ async def get_gpt_response(prompt):
             messages=[{"role": "user", "content": prompt}]
         )
         return response["choices"][0]["message"]["content"].strip()
-    except openai.error.OpenAIError as e:
+    except openai.OpenAIError as e:
         logging.error(f"Ошибка OpenAI: {e}")
         return f"Ошибка OpenAI: {e}"
     except Exception as e:
