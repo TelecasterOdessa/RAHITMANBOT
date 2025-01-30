@@ -14,12 +14,15 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 # Клавиатура для выбора типа контейнера
-container_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-container_kb.add("20GP", "40GP", "40HQ")
+container_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="20GP")], 
+                                              [KeyboardButton(text="40GP")], 
+                                              [KeyboardButton(text="40HQ")]], 
+                                     resize_keyboard=True)
 
 # Клавиатура для формы оплаты
-payment_kb = ReplyKeyboardMarkup(resize_keyboard=True)
-payment_kb.add("Наличный расчёт", "Безналичный расчёт")
+payment_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Наличный расчёт")], 
+                                            [KeyboardButton(text="Безналичный расчёт")]], 
+                                     resize_keyboard=True)
 
 # Словарь для хранения временных данных пользователей
 user_data = {}
