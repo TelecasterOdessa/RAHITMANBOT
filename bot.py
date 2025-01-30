@@ -1,14 +1,11 @@
 import logging
 import asyncio
+import random
+import requests
 from aiogram import Bot, Dispatcher, types
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # Токен бота (замените на свой)
 TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"
-
-# ID чата с агентами (замените на актуальный)
-AGENT_USER_ID = 271525995
-  # Замените на Telegram ID нужного контакта
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
@@ -17,57 +14,23 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Клавиатура для выбора типа контейнера
-container_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="20GP")], 
-                                              [KeyboardButton(text="40GP")], 
-                                              [KeyboardButton(text="40HQ")]], 
-                                     resize_keyboard=True)
-
-# Клавиатура для формы оплаты
-payment_kb = ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="Наличный расчёт")], 
-                                            [KeyboardButton(text="Безналичный расчёт")]], 
-                                     resize_keyboard=True)
-
-# Словарь для хранения временных данных пользователей
-user_data = {}
+# Функция для получения анекдота с моего источника
+async def get_joke():
+    url = "https://official-joke-api.appspot.com/random_joke"  # Публичный API с анекдотами
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        return f"{data['setup']} \n{data['punchline']}"
+    return "Не удалось получить анекдот, попробуй ещё раз!"
 
 @dp.message(lambda message: message.text == "/start")
 async def start(message: types.Message):
-    await message.answer("Привет! Я бот для запроса ставок. Введи маршрут (например, Shanghai - Odessa)")
+    await message.answer("Привет! Я бот-анекдотчик. Напиши 'анекдот', и я расскажу тебе что-нибудь смешное!")
 
-@dp.message(lambda message: " - " in message.text)
-async def get_route(message: types.Message):
-    user_data[message.from_user.id] = {"route": message.text}
-    await message.answer("Выбери тип контейнера", reply_markup=container_kb)
-
-@dp.message(lambda message: message.text in ["20GP", "40GP", "40HQ"])
-async def get_container(message: types.Message):
-    user_data[message.from_user.id]["container"] = message.text
-    await message.answer("Выбери форму оплаты", reply_markup=payment_kb)
-
-@dp.message(lambda message: message.text in ["Наличный расчёт", "Безналичный расчёт"])
-async def get_payment(message: types.Message):
-    user_id = message.from_user.id
-    
-    if user_id not in user_data:
-        await message.answer("Ошибка: начни сначала, введи маршрут.")
-        return
-    
-    user_data[user_id]["payment"] = message.text
-    
-    # Формируем запрос
-    data = user_data[user_id]
-    request_text = (f"📢 Запрос ставки:\n"
-                    f"Маршрут: {data['route']}\n"
-                    f"Тип контейнера: {data['container']}\n"
-                    f"Форма оплаты: {data['payment']}")
-    
-    await message.answer(request_text + "\nОтправляем агентам...")
-    
-    # Отправляем запрос в чат агентов
-    await bot.send_message(AGENT_USER_ID, request_text)
-    
-    del user_data[user_id]  # Очищаем данные
+@dp.message(lambda message: message.text.lower() == "анекдот")
+async def send_joke(message: types.Message):
+    joke = await get_joke()
+    await message.answer(f"😂 Вот тебе анекдот: {joke}")
 
 # Запуск бота
 async def main():
