@@ -1,20 +1,21 @@
 import logging
 import asyncio
 from openai import OpenAI
-from aiogram import Bot, Dispatcher
+from aiogram import Bot, Dispatcher, Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
-# Указываем токены
+# Указываем токены напрямую
 TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"  # Вставь свой Telegram Bot Token
 OPENAI_API_KEY = "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"  # Вставь свой OpenAI API Key
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
 
-# Создаём бота
+# Создаём бота и диспетчер
 bot = Bot(token=TOKEN)
 dp = Dispatcher()  # В aiogram 3+ Dispatcher создаётся без аргументов
+router = Router()  # Создаём Router для хэндлеров
 
 # Создаём OpenAI клиент
 client = OpenAI(api_key=OPENAI_API_KEY)
@@ -32,12 +33,12 @@ async def get_gpt_response(prompt):
         return "Произошла ошибка. Попробуйте позже."
 
 # Обработчик команды /start
-@dp.message(Command("start"))
+@router.message(Command("start"))
 async def start(message: Message):
     await message.answer("Привет! Я бот с поддержкой GPT. Задай мне любой вопрос, и я помогу!")
 
 # Обработчик всех текстовых сообщений
-@dp.message()
+@router.message()
 async def handle_message(message: Message):
     answer = await get_gpt_response(message.text)
     await message.answer(answer)
@@ -45,9 +46,7 @@ async def handle_message(message: Message):
 # Запуск бота
 async def main():
     logging.info("Бот запущен!")
-    # Регистрируем бота в диспетчере
-    dp.include_router(dp)  
-    # Запускаем бота
+    dp.include_router(router)  # Подключаем router, а не сам dp!
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
