@@ -1,21 +1,13 @@
 import logging
 import asyncio
-import os
 from openai import OpenAI
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 from aiogram.types import Message
-from dotenv import load_dotenv
 
-# Загружаем переменные окружения
-load_dotenv()
-
-TOKEN = os.getenv("7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA")
-OPENAI_API_KEY = os.getenv("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")
-
-# Проверяем, загружены ли токены
-if not TOKEN or not OPENAI_API_KEY:
-    raise ValueError("Ошибка: отсутствуют TELEGRAM_BOT_TOKEN или OPENAI_API_KEY. Проверь .env файл!")
+# Указываем токены напрямую
+TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"  # Вставь свой Telegram Bot Token
+OPENAI_API_KEY = "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"  # Вставь свой OpenAI API Key
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
