@@ -4,7 +4,7 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # Токен бота (замените на свой)
-TOKEN = "YOUR_BOT_TOKEN"
+TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"
 
 # ID чата с агентами (замените на актуальный)
 AGENT_USER_ID = 271525995
