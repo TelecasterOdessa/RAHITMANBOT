@@ -60,7 +60,7 @@ async def get_payment(message: types.Message):
 
 # Запуск бота
 async def main():
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, drop_pending_updates=True)
 
 if __name__ == "__main__":
     asyncio.run(main())
