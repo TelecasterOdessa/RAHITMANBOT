@@ -1,10 +1,11 @@
 import logging
 import asyncio
-import random
+import openai
 from aiogram import Bot, Dispatcher, types
 
 # Токен бота (замените на свой)
 TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"
+OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
@@ -13,31 +14,27 @@ logging.basicConfig(level=logging.INFO)
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
-# Варианты ответов на вопросы
-decisions = [
-    "Да!",
-    "Нет!",
-    "Возможно...",
-    "Попробуй позже.",
-    "Определённо да!",
-    "Я не уверен, переспроси.",
-    "Конечно!",
-    "Сомневаюсь.",
-    "Скорее всего, да.",
-    "Не в этот раз!"
-    "Ебать ты мудак!"
-    "У тебя хуевый вопрос, давай другой гавно ты такое!"
-    "Андрей ЛисОв?! Это ты?!!"
-]
+# Функция для запроса к OpenAI GPT
+async def get_gpt_response(prompt):
+    try:
+        openai.api_key = OPENAI_API_KEY
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}]
+        )
+        return response["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        logging.error(f"Ошибка запроса к OpenAI: {e}")
+        return "Не удалось получить ответ от AI. Попробуй позже!"
 
 @dp.message(lambda message: message.text == "/start")
 async def start(message: types.Message):
-    await message.answer("Привет! Я бот-Решала. Задай мне любой вопрос, и я дам ответ!")
+    await message.answer("Привет! Я бот с поддержкой GPT. Задай мне любой вопрос, и я помогу!")
 
 @dp.message()
-async def give_decision(message: types.Message):
-    answer = random.choice(decisions)
-    await message.answer(f"🔮 {answer}")
+async def handle_message(message: types.Message):
+    answer = await get_gpt_response(message.text)
+    await message.answer(answer)
 
 # Запуск бота
 async def main():
