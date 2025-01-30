@@ -16,7 +16,6 @@ dp = Dispatcher()
 
 # Функция для запроса к OpenAI GPT
 async def get_gpt_response(prompt):
-    async def get_gpt_response(prompt):
     try:
         openai.api_key = OPENAI_API_KEY
         response = openai.ChatCompletion.create(
@@ -30,7 +29,6 @@ async def get_gpt_response(prompt):
     except Exception as e:
         logging.error(f"Другая ошибка: {e}")
         return f"Ошибка: {e}"
-
 
 @dp.message(lambda message: message.text == "/start")
 async def start(message: types.Message):
