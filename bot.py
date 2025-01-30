@@ -4,7 +4,11 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 # Токен бота (замените на свой)
-TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"
+TOKEN = "YOUR_BOT_TOKEN"
+
+# ID чата с агентами (замените на актуальный)
+AGENT_USER_ID = 271525995
+  # Замените на Telegram ID нужного контакта
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
@@ -43,20 +47,27 @@ async def get_container(message: types.Message):
 
 @dp.message(lambda message: message.text in ["Наличный расчёт", "Безналичный расчёт"])
 async def get_payment(message: types.Message):
-    user_data[message.from_user.id]["payment"] = message.text
+    user_id = message.from_user.id
+    
+    if user_id not in user_data:
+        await message.answer("Ошибка: начни сначала, введи маршрут.")
+        return
+    
+    user_data[user_id]["payment"] = message.text
     
     # Формируем запрос
-    data = user_data[message.from_user.id]
-    request_text = (f"Запрос ставки:\n"
+    data = user_data[user_id]
+    request_text = (f"📢 Запрос ставки:\n"
                     f"Маршрут: {data['route']}\n"
                     f"Тип контейнера: {data['container']}\n"
                     f"Форма оплаты: {data['payment']}")
     
     await message.answer(request_text + "\nОтправляем агентам...")
     
-    # Здесь можно добавить логику отправки в Skype или email
+    # Отправляем запрос в чат агентов
+    await bot.send_message(AGENT_USER_ID, request_text)
     
-    del user_data[message.from_user.id]  # Очищаем данные
+    del user_data[user_id]  # Очищаем данные
 
 # Запуск бота
 async def main():
@@ -64,4 +75,3 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-
