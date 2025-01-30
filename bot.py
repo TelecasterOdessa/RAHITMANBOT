@@ -5,7 +5,7 @@ from aiogram import Bot, Dispatcher, types
 
 # Токен бота (замените на свой)
 TOKEN = "7909575276:AAH8gq7lrpgBUlscwZ7Gn2Fd8-PTcYEysUA"
-OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
+OPENAI_API_KEY = "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"
 
 # Включение логирования
 logging.basicConfig(level=logging.INFO)
