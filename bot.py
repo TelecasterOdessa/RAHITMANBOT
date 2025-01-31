@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 # Указываем токены (замени на свои)
 TOKEN = "7909575276:AAG_C-blvdI71VyLo6yGnkvzU6xk-2XCIg4"
-OPENAI_API_KEY = "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"
+OPENAI_API_KEY = "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"
 
 # Создаём бота и диспетчер
 bot = Bot(token=TOKEN)
