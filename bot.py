@@ -54,7 +54,14 @@ async def handle_message(message: Message):
 
 # Запуск бота
 async def main():
-    logging.info("Бот запущен!")
+    logging.info("Проверяем Webhook перед запуском Polling...")
+    webhook_info = await bot.get_webhook_info()
+
+    if webhook_info.url:
+        logging.info(f"Обнаружен активный Webhook: {webhook_info.url}. Удаляем...")
+        await bot.delete_webhook()
+
+    logging.info("Запускаем бота...")
     dp.include_router(router)
     await dp.start_polling(bot)
 
