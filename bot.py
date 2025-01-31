@@ -9,7 +9,7 @@ from aiogram.filters import Command
 logging.basicConfig(level=logging.INFO)
 
 # Указываем токены (замени на свои)
-TOKEN = "7909575276:AAG_C-blvdI71VyLo6yGnkvzU6xk-2XCIg4"
+TOKEN = "7909575276:AAG_C-blvdI71VyLo6yGnkvzU6xk-2XCIg4 "
 OPENAI_API_KEY = "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"
 
 # Создаём бота и диспетчер
@@ -63,11 +63,14 @@ async def main():
 
     logging.info("Webhook удалён, бот переходит в режим Polling.")
     
+    # Ждём пару секунд перед Polling, чтобы Telegram понял, что только одна сессия активна
+    await asyncio.sleep(2)
+    
     # Подключаем роутер
     dp.include_router(router)
     
-    # Запускаем Polling
-    await dp.start_polling(bot)
+    # Запускаем Polling с очисткой обновлений
+    await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
 
 if __name__ == "__main__":
     asyncio.run(main())
