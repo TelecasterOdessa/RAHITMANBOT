@@ -62,6 +62,9 @@ async def main():
         await bot.delete_webhook(drop_pending_updates=True)
 
     logging.info("Webhook удалён, бот должен работать нормально.")
+    
+    # Закрываем HTTP-сессию
+    await bot.session.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
