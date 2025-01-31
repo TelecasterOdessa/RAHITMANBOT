@@ -23,13 +23,13 @@ async def calculate_shipping_cost(total_cost, weights):
     return {client: round((weight / total_weight) * total_cost, 2) for client, weight in weights.items()}
 
 # Инструкция для пользователей
-INSTRUCTION = "Отправь мне данные в формате: \nОбщая стоимость: <число>\nКлиент1: <вес>\nКлиент2: <вес>"
+INSTRUCTION = "Привет, грамотей! Училка по математике в шоке от тебя! Отправь мне данные для просчета стоимости транспортировки в следующем формате: \nОбщая стоимость грн/usd: сумма\nКлиент1: вес\nКлиент2: вес"
 
 # Обработчик команды /start
 @router.message(Command("start"))
 async def start(message: Message):
     logging.info(f"Команда /start от {message.from_user.id}")
-    await message.answer(f"Привет! {INSTRUCTION}")
+    await message.answer(INSTRUCTION)
 
 # Обработчик расчета стоимости
 @router.message()
@@ -39,7 +39,7 @@ async def handle_calculation(message: Message):
         total_cost = float(lines[0].split(":")[1].strip())
         weights = {line.split(":")[0].strip(): float(line.split(":")[1].strip()) for line in lines[1:]}
         costs = await calculate_shipping_cost(total_cost, weights)
-        response = "Распределение стоимости:\n" + "\n".join([f"{client}: {cost} у.е." for client, cost in costs.items()])
+        response = "Распределение стоимости (грн/usd):\n" + "\n".join([f"{client}: {cost} грн/usd" for client, cost in costs.items()])
         await message.answer(response)
     except Exception as e:
         logging.error(f"Ошибка обработки данных: {e}")
