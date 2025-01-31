@@ -52,19 +52,22 @@ async def handle_message(message: Message):
         logging.error(f"Ошибка обработки сообщения: {e}")
         await message.answer("Произошла ошибка при обработке вашего сообщения.")
 
-# Запуск бота (Polling временно отключен)
+# Запуск бота (Polling включен)
 async def main():
-    logging.info("Проверяем Webhook перед запуском...")
+    logging.info("Проверяем Webhook перед запуском Polling...")
     webhook_info = await bot.get_webhook_info()
 
     if webhook_info.url:
         logging.info(f"Обнаружен активный Webhook: {webhook_info.url}. Удаляем...")
         await bot.delete_webhook(drop_pending_updates=True)
 
-    logging.info("Webhook удалён, бот должен работать нормально.")
+    logging.info("Webhook удалён, бот переходит в режим Polling.")
     
-    # Закрываем HTTP-сессию
-    await bot.session.close()
+    # Подключаем роутер
+    dp.include_router(router)
+    
+    # Запускаем Polling
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
     asyncio.run(main())
